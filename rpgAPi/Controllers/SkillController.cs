@@ -26,6 +26,51 @@ namespace rpgAPi.Controllers
           await _context.SaveChangesAsync();
           return Ok(skill);
         }
+
+        //update skill information
+        [HttpPut("UpdateSkill")]
+        public async Task<ActionResult<List<Skill>>> UpdateSkill(AddSkillDto request)
+        {
+            var skill = await _context.Skills.FindAsync(request.Id);
+            if (skill == null)
+                return NotFound();
+
+            skill.Name = request.Name;
+            skill.Damage = request.Damage;
+            await _context.SaveChangesAsync();
+            return Ok(skill);
+        }
+        
+        //remove skill
+        [HttpDelete("RemoveSkill")]
+        public async Task<ActionResult<List<Skill>>> RemoveSkill(int id)
+        {
+            var skill = await _context.Skills.FindAsync(id);
+            if (skill == null)
+                return NotFound();
+
+            _context.Skills.Remove(skill);
+            await _context.SaveChangesAsync();
+            return Ok(skill);
+        }
+
+        //list all skills
+        [HttpGet("ListAllSkills")]
+        public async Task<ActionResult<List<Skill>>> GetAllSkills()
+        {
+            var skills = await _context.Skills.ToListAsync();
+            return Ok(skills);
+        }
+
+        //get skill by id
+        [HttpGet("ListSkillById")]
+        public async Task<ActionResult<Skill>> GetSkillById(int id)
+        {
+            var skill = await _context.Skills.FindAsync(id);
+            if (skill == null)
+                return NotFound();
+
+            return Ok(skill);
+        }
     }
-    
 }

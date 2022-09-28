@@ -12,7 +12,8 @@ namespace rpgAPi.Controllers
             _context = context;
         }
 
-        [HttpGet]
+        //list character by id
+        [HttpGet("ListCharacterByUserId")]
         public async Task<ActionResult<List<Character>>> Get(int userId)
         {
             var characters = await _context.Characters
@@ -24,7 +25,21 @@ namespace rpgAPi.Controllers
             return characters;
         }
 
-        [HttpPost]
+        //list all characters
+        [HttpGet("ListAllCharacters")]
+        public async Task<ActionResult<List<Character>>> GetAllCharacters()
+        {
+            var characters = await _context.Characters
+            .Where(c => c.UserId != null)
+            .Include(c => c.Weapon)
+            .Include(c => c.Skills)
+            .ToListAsync();
+
+            return Ok(characters);
+        }
+
+        //Add character
+        [HttpPost("AddCharacter")]
         public async Task<ActionResult<List<Character>>> Create(CreateCharacterDto request)
         {
 
@@ -45,7 +60,7 @@ namespace rpgAPi.Controllers
             return await Get(newCharacter.UserId);
         }
 
-        [HttpPost("weapon")]
+        [HttpPost("AddWeapon")]
         public async Task<ActionResult<Character>> AddWeapon(AddWeaponDTO request)
         {
 
@@ -66,7 +81,7 @@ namespace rpgAPi.Controllers
             return character;
         }
 
-        [HttpPost("skill")]
+        [HttpPost("AddSkill")]
         public async Task<ActionResult<Character>> AddCharacterSkill(AddCharacterSkillDto request)
         {
 
@@ -88,7 +103,26 @@ namespace rpgAPi.Controllers
 
             return character;
         }
+
+        //delete character
+        [HttpDelete("DeleteCharacter")]
+        public async Task<ActionResult<Character>> DeleteCharacter(int id)
+        {
+            var character = await _context.Characters
+            .Include(c => c.Weapon)
+            .Include(c => c.Skills)
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+            _context.Characters.Remove(character);
+            await _context.SaveChangesAsync();
+
+            return character;
+        }
+
+
+
     }
+
 }
 
 
